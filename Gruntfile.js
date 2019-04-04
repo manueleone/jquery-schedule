@@ -15,6 +15,19 @@ module.exports = function (grunt) {
             },
             all: ['src/js/*.js', 'dist/*.js']
         },
+        babel: {
+            options: {
+                sourceMap: true,
+                presets: ['@babel/preset-env']
+            },
+            files: {
+                expand: true,
+                cwd: 'src/js',
+                src: '*.js',
+                dest: 'dist/',
+                ext: '-compiled.js'
+            }
+        },
         copy: {
             css: {
                 expand: true,
@@ -49,20 +62,30 @@ module.exports = function (grunt) {
                 extDot: 'last'
             }
         },
-        compass: {
+        sass: {
             dev: {
                 options: {
-                    sassDir: 'src/scss/',
-                    cssDir: 'dist/',
-                    noLineComments: true
-                }
+                    style: 'expanded'
+                },
+                files: [{
+                    expand: true,
+                    cwd: './src/scss',
+                    src: '*.scss',
+                    dest: './dist',
+                    ext: '.css'
+                }]
             },
             prod: {
                 options: {
-                    sassDir: 'src/scss/',
-                    cssDir: 'cache/',
-                    environment: 'production'
-                }
+                    sourcemap: false
+                },
+                files: [{
+                    expand: true,
+                    cwd: './src/scss',
+                    src: '*.scss',
+                    dest: './cache',
+                    ext: '.css'
+                }]
             }
         },
         usebanner: {
@@ -106,30 +129,32 @@ module.exports = function (grunt) {
             },
             css: {
                 files: ['src/scss/*.scss'],
-                tasks: ['compass:dev']
+                tasks: ['sass:dev']
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-remove-logging');
     grunt.loadNpmTasks('grunt-banner');
+    grunt.loadNpmTasks('grunt-babel');
 
     grunt.registerTask('default', [
         'clean',
         'jshint',
-        'compass:prod',
-        'compass:dev',
+        'sass:prod',
+        'sass:dev',
         'copy:js',
         'copy:css',
         'removelogging',
         'uglify',
         'usebanner:dev',
-        'usebanner:prod'
+        'usebanner:prod',
+        'babel'
     ]);
 };
