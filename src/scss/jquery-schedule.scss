@@ -154,9 +154,6 @@ $padding: 16px;
     width: 100%;
     height: $zone* 2 * 24;
     position: relative;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 
     &-remove {
