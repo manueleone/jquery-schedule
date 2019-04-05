@@ -1,11 +1,13 @@
-'use strict';
-
 (function ($, window, document) {
+    'use strict';
+
     // Defaults options
     const defaults = {
         mode: 'edit', // read
         hour: 24, // 12
         days: 7, // 7/5
+        start: 0,
+        end: 24,
         periodDuration: 30, // 15/30/60
         data: [],
         periodOptions: true,
@@ -250,7 +252,7 @@
 
             $('<div class="jqs-grid"><div class="jqs-grid-head"></div></div>').appendTo($(this.element));
 
-            for (let j = 0; j < 25; j += 1) {
+            for (let j = this.settings.start; j < (this.settings.end + 1); j += 1) {
                 $(`<div class="jqs-grid-line"><div class="jqs-grid-hour">${this.formatHour(j)}</div></div>`)
                     .appendTo($('.jqs-grid', this.element));
             }
@@ -310,7 +312,7 @@
          */
         add(parent, position, height, params) {
             if (height <= 0 || position >= this.periodHeight) {
-                console.error('Invalid period');
+                // console.error('Invalid period');
 
                 return false;
             }
@@ -344,7 +346,7 @@
 
             // period validation
             if (!this.isValid(period)) {
-                console.error('Invalid period', this.periodInit(position, position + height));
+                // console.error('Invalid period', this.periodInit(position, position + height));
 
                 $(period).remove();
 
@@ -361,7 +363,6 @@
                 period.draggable({
                     grid: [0, this.periodPosition],
                     containment: 'parent',
-                    // helper: 'clone',
                     drag(e, ui) {
                         $('.jqs-period-time', ui.helper).text($this.periodDrag(ui));
                         $this.closeOptions();
@@ -468,10 +469,10 @@
 
         /**
          * Open the options popup
-         * @param e
+         * @param event
          * @param period
          */
-        openOptions(e, period) {
+        openOptions(event, period) {
             const $this = this;
             $this.closeOptions();
 
@@ -890,13 +891,14 @@
     });
 
     $.fn[pluginName] = function (options) {
+        let $this = this;
         let ret = false;
-        const args = Array.prototype.slice.call(arguments);
-        const loop = this.each(() => {
-            if (!$.data(this, `plugin_${pluginName}`)) {
-                $.data(this, `plugin_${pluginName}`, new Plugin(this, options));
+        let args = Array.prototype.slice.call(arguments);
+        let loop = $this.each((i, el) => {
+            if (!$.data(el, 'plugin_' + pluginName)) {
+                $.data(el, 'plugin_' + pluginName, new Plugin(this, options));
             } else if ($.isFunction(Plugin.prototype[options])) {
-                ret = $.data(this, `plugin_${pluginName}`)[options](args);
+                ret = $.data(el, 'plugin_' + pluginName)[options](args);
             }
         });
 
